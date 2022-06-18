@@ -1,6 +1,5 @@
 global = global or require "global"
 screen = screen or require "screen"
-command = command or require "command"
 config = config or require "config"
 
 local vimode = {}
@@ -197,7 +196,7 @@ end
 
 function vimode.normalMode()
 	term.setCursorBlink(false)
-
+	command = command or require "command"
 
 	local keyPresses = {}
 

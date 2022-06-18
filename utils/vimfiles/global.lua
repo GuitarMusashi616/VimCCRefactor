@@ -28,10 +28,10 @@ end
 function global.setVar(key, value)
 	local temp = global.globals[key]
 	if temp == nil then
-		error( "set:no such key: " .. key )
+		error("set:no such key: " .. key)
 	end
 	if value == nil then
-		error( "you forgot the value: " .. key )
+		error("you forgot the value: " .. key)
 	end
 	global.globals[key] = value
 end
@@ -51,11 +51,11 @@ function global.getLine(lineNo)
 end
 
 function global.getCurLine()
-	return lines[global.globals["currentLine"]];
+	return lines[ global.globals["currentLine"] ];
 end
 
-function global.setCurLine( text )
-	lines[global.globals["currentLine"]] = text
+function global.setCurLine(text)
+	lines[ global.globals["currentLine"] ] = text
 end
 
 function global.setLine(lineNo, text)
@@ -72,7 +72,7 @@ function global.removeLine(lineNo)
 	length = length - 1
 end
 
-function global.insertLine( pos, text )
+function global.insertLine(pos, text)
 	table.insert(lines, pos, text)
 	length = length + 1
 end
