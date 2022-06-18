@@ -227,10 +227,10 @@ local function move(command, numberMod, actionType, otherMod)
 				end
 				move("vert", numberMod, "move", "n")
 			end
-			command.goToStart("move", "line")
+			_command.goToStart("move", "line")
 			move("delEol", math.abs(numberMod), "delEol", "n")
 
-			command.goToEndOfLine("delete", "n")
+			_command.goToEndOfLine("delete", "n")
 			move("delEol", 1, "delEol", "n")
 		else
 			cursorVerticalMove(numberMod)
@@ -325,14 +325,14 @@ function _command.runViCommand(command)
 		move("vert", -numMod, use, subMod)
 
 	elseif command[#command] == "$" then
-		command.goToEndOfLine(use, subMod)
+		_command.goToEndOfLine(use, subMod)
 
 	elseif command[#command] == "^" then
-		command.goToStart(use, "text")
+		_command.goToStart(use, "text")
 
 	elseif command[#command] == "0" and
 		tonumber(command[#command - 1]) == nil then
-		command.goToStart(use, "line")
+		_command.goToStart(use, "line")
 
 	elseif command[#command] == "G" then
 		local moveDist
@@ -429,9 +429,9 @@ function _command.runViCommand(command)
 
 
 	elseif command[#command] == "S" then
-		command.goToStart("move", "line")
+		_command.goToStart("move", "line")
 		move("delEol", numMod - 1, "delEol", "n")
-		command.goToEndOfLine("delete", "i")
+		_command.goToEndOfLine("delete", "i")
 
 	elseif command[#command] == "~" then
 		move("horiz", numMod, "switchCase", subMod)
@@ -450,9 +450,9 @@ function _command.runViCommand(command)
 
 	elseif command[#command] == "d" then
 		if otherMod == "d" then
-			command.goToStart("move", "line")
+			_command.goToStart("move", "line")
 			move("delEol", numMod - 1, "delEol", "noSpace")
-			command.goToEndOfLine("delete", "n")
+			_command.goToEndOfLine("delete", "n")
 			move("delEol", 1, "delEol", "noSpace")
 		else
 			triggered = false
@@ -460,9 +460,9 @@ function _command.runViCommand(command)
 
 	elseif command[#command] == "c" then
 		if otherMod == "c" then
-			command.goToStart("move", "line")
+			_command.goToStart("move", "line")
 			move("delEol", numMod - 1, "delEol", "noSpace")
-			command.goToEndOfLine("delete", "i")
+			_command.goToEndOfLine("delete", "i")
 		else
 			triggered = false
 		end
@@ -471,13 +471,13 @@ function _command.runViCommand(command)
 		for i = 2, numMod do
 			move("delEol", 1, "delEol", "noSpace")
 		end
-		command.goToEndOfLine("delete", "n")
+		_command.goToEndOfLine("delete", "n")
 
 	elseif command[#command] == "C" then
 		for i = 2, numMod do
 			move("delEol", 1, "delEol", "noSpace")
 		end
-		command.goToEndOfLine("delete", "n")
+		_command.goToEndOfLine("delete", "n")
 		_vimode.insertMode("here")
 
 	elseif command[#command] == "r" then
