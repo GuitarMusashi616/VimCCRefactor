@@ -98,8 +98,28 @@ local function cursorVerticalMove(numberMod)
 	global.setVar("currentColumn", curX)
 end
 
-command.goToStart = nil
-command.goToEndOfLine = nil
+command.goToEndOfLine = function(actionType, subMod)
+	move(
+		"horiz",
+		string.len(global.getCurLine()) - global.getVar("currentColumn") + 1,
+		actionType, subMod)
+end
+
+-- this needs to be non local for it to work, maybe, perhaps. I have just given up
+command.goToStart = function(actionType, location)
+	-- location can be ( line | text )
+	local wsS, wsE =
+	string.find(global.getCurLine(), "%s+")
+	if location == "text" then
+		if wsS ~= 1 then wsE = 0 end
+	else
+		wsE = 0
+	end
+	move("horiz",
+		-(global.getVar("currentColumn") - (wsE + 1)),
+		actionType, subMod)
+end
+
 -- horizontal deletion delets one character less than the cursor moves,
 -- This is sometimes useful but most of the time not
 local function move(command, numberMod, actionType, otherMod)
@@ -217,28 +237,6 @@ local function move(command, numberMod, actionType, otherMod)
 		end
 	end
 	screen.redraw()
-end
-
-command.goToEndOfLine = function(actionType, subMod)
-	move(
-		"horiz",
-		string.len(global.getCurLine()) - global.getVar("currentColumn") + 1,
-		actionType, subMod)
-end
-
--- this needs to be non local for it to work, maybe, perhaps. I have just given up
-command.goToStart = function(actionType, location)
-	-- location can be ( line | text )
-	local wsS, wsE =
-	string.find(global.getCurLine(), "%s+")
-	if location == "text" then
-		if wsS ~= 1 then wsE = 0 end
-	else
-		wsE = 0
-	end
-	move("horiz",
-		-(global.getVar("currentColumn") - (wsE + 1)),
-		actionType, subMod)
 end
 
 -- command should be a 'char' array
