@@ -1,10 +1,10 @@
-global = global or require "global"
-vimode = vimode or require "vimode"
-logger = logger or require "logger"
-screen = screen or require "screen"
-file = file or require "file"
+_global = _global or require "global"
+_vimode = _vimode or require "vimode"
+_logger = _logger or require "logger"
+_screen = _screen or require "screen"
+_file = _file or require "file"
 
-local command = {}
+local _command = {}
 
 local function getNumber(presses, startPos)
 	local noTemp
@@ -46,18 +46,18 @@ local function parseViCommand(presses)
 end
 
 local function cursorVerticalMove(numberMod)
-	local curLine = global.getVar("currentLine") + numberMod
+	local curLine = _global.getVar("currentLine") + numberMod
 
 	-- Check how many lines are on the screen
 	local linesOnScreen = 0
 	local skippedLines = 0
-	local i = global.getVar("topLine")
-	while i <= global.getVar("topLine") + global.getVar("termY") - 2 - skippedLines do
-		if i > global.getLength() then break end
+	local i = _global.getVar("topLine")
+	while i <= _global.getVar("topLine") + _global.getVar("termY") - 2 - skippedLines do
+		if i > _global.getLength() then break end
 		linesOnScreen = linesOnScreen + 1
 
 		-- Please don't toture me to hard for this
-		local ch = math.floor(string.len(global.getLine(i)) / (global.getVar("termX") + 0.000001))
+		local ch = math.floor(string.len(_global.getLine(i)) / (_global.getVar("termX") + 0.000001))
 		skippedLines = skippedLines + ch
 
 		i = i + 1
@@ -70,53 +70,53 @@ local function cursorVerticalMove(numberMod)
 	while curLine < 1 do
 		curLine = curLine + 1
 	end
-	while curLine > global.getLength() do
+	while curLine > _global.getLength() do
 		curLine = curLine - 1
 	end
 
 	-- scroll topLine upwards/downwards until curLine is on the screen
-	while curLine < global.getVar("topLine") do
-		global.setVar("topLine", global.getVar("topLine") - 1)
+	while curLine < _global.getVar("topLine") do
+		_global.setVar("topLine", _global.getVar("topLine") - 1)
 	end
-	while curLine > global.getVar("topLine") + linesOnScreen - 1 do
-		global.setVar("topLine", global.getVar("topLine") + 1)
+	while curLine > _global.getVar("topLine") + linesOnScreen - 1 do
+		_global.setVar("topLine", _global.getVar("topLine") + 1)
 	end
-	global.setVar("currentLine", curLine)
+	_global.setVar("currentLine", curLine)
 
 	-- Fix the column if it's to large
-	if global.getVar("actualColumn") > global.getVar("currentColumn") then
-		global.setVar("currentColumn", global.getVar("actualColumn"))
+	if _global.getVar("actualColumn") > _global.getVar("currentColumn") then
+		_global.setVar("currentColumn", _global.getVar("actualColumn"))
 	end
-	local curX = global.getVar("currentColumn")
-	local strLen = string.len(global.getLine(curLine))
+	local curX = _global.getVar("currentColumn")
+	local strLen = string.len(_global.getLine(curLine))
 	if curX > strLen then
 		curX = strLen
 	end
 	if strLen == 0 then
 		curX = 1
 	end
-	global.setVar("currentColumn", curX)
+	_global.setVar("currentColumn", curX)
 end
 
-command.goToEndOfLine = function(actionType, subMod)
+_command.goToEndOfLine = function(actionType, subMod)
 	move(
 		"horiz",
-		string.len(global.getCurLine()) - global.getVar("currentColumn") + 1,
+		string.len(_global.getCurLine()) - _global.getVar("currentColumn") + 1,
 		actionType, subMod)
 end
 
 -- this needs to be non local for it to work, maybe, perhaps. I have just given up
-command.goToStart = function(actionType, location)
+_command.goToStart = function(actionType, location)
 	-- location can be ( line | text )
 	local wsS, wsE =
-	string.find(global.getCurLine(), "%s+")
+	string.find(_global.getCurLine(), "%s+")
 	if location == "text" then
 		if wsS ~= 1 then wsE = 0 end
 	else
 		wsE = 0
 	end
 	move("horiz",
-		-(global.getVar("currentColumn") - (wsE + 1)),
+		-(_global.getVar("currentColumn") - (wsE + 1)),
 		actionType, subMod)
 end
 
@@ -125,30 +125,30 @@ end
 local function move(command, numberMod, actionType, otherMod)
 	-- merges current line with the next line, removes that line ('J')
 	if otherMod == "delete" then
-		global.setVar("hasChanged", true)
+		_global.setVar("hasChanged", true)
 	end
 	if command == "delEol" then
 		for i = 1, numberMod do
-			local nextLine = global.getVar("currentLine") + 1
+			local nextLine = _global.getVar("currentLine") + 1
 			local mSpace
 			if otherMod == "space" then mSpace = " " else mSpace = "" end
-			if global.getLine(nextLine) ~= nil then
-				global.setCurLine(
-					global.getCurLine() ..
+			if _global.getLine(nextLine) ~= nil then
+				_global.setCurLine(
+					_global.getCurLine() ..
 					mSpace ..
-					global.getLine(nextLine))
-				global.removeLine(nextLine)
+					_global.getLine(nextLine))
+				_global.removeLine(nextLine)
 			end
 		end
-		global.setVar("hasChanged", true)
+		_global.setVar("hasChanged", true)
 
 	elseif command == "horiz" then
-		if string.len(global.getCurLine()) == 0 then return end
+		if string.len(_global.getCurLine()) == 0 then return end
 		if actionType == "delete" or actionType == "yank" then
-			local curX = global.getVar("currentColumn")
+			local curX = _global.getVar("currentColumn")
 
 			if actionType == "delete" then
-				local temp = global.getCurLine()
+				local temp = _global.getCurLine()
 				-- used since some thing differ when moving forwards and backwarsd
 				local backMod = 1
 				if numberMod < 0 then
@@ -168,10 +168,10 @@ local function move(command, numberMod, actionType, otherMod)
 					outString = string.reverse(outString)
 					move("horiz", numberMod, "move", "n")
 				end
-				global.setCurLine(outString)
+				_global.setCurLine(outString)
 
 				if otherMod == "i" then
-					vimode.insertMode("here")
+					_vimode.insertMode("here")
 				end
 			end
 
@@ -184,46 +184,46 @@ local function move(command, numberMod, actionType, otherMod)
 				'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
 				'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
 			}
-			local start = global.getVar("currentColumn")
-			local line = global.getCurLine()
+			local start = _global.getVar("currentColumn")
+			local line = _global.getCurLine()
 
-			logger.info("numberMod start: " .. numberMod)
+			_logger.info("numberMod start: " .. numberMod)
 
 			for i = start, numberMod + start - 1 do
 				for c = 1, #lowerCase do
 					local hasChanged = false
 					if line:sub(i, i) == lowerCase[c] then
 						line = line:sub(1, i - 1) .. upperCase[c] .. line:sub(i + 1)
-						logger.info("made " .. lowerCase[c] .. " upper case")
+						_logger.info("made " .. lowerCase[c] .. " upper case")
 						hasChanged = true
 					end
 					if line:sub(i, i) == upperCase[c] and not hasChanged then
 						line = line:sub(1, i - 1) .. lowerCase[c] .. line:sub(i + 1)
-						logger.info("made " .. upperCase[c] .. " lower case")
+						_logger.info("made " .. upperCase[c] .. " lower case")
 					end
 				end
 			end
-			global.setCurLine(line)
-			logger.info("numberMod end: " .. numberMod)
+			_global.setCurLine(line)
+			_logger.info("numberMod end: " .. numberMod)
 			move("horiz", numberMod, "move", "n")
 
 
 		else -- simple move
-			local xBefore = global.getVar("currentColumn")
+			local xBefore = _global.getVar("currentColumn")
 			local xAfter = xBefore + numberMod
 			if xAfter < 1 then xAfter = 1 end
-			if xAfter > string.len(global.getCurLine()) then
-				xAfter = string.len(global.getCurLine())
+			if xAfter > string.len(_global.getCurLine()) then
+				xAfter = string.len(_global.getCurLine())
 			end
-			global.setVar("currentColumn", xAfter)
-			global.setVar("actualColumn", xAfter)
+			_global.setVar("currentColumn", xAfter)
+			_global.setVar("actualColumn", xAfter)
 		end
 
 	elseif command == "vert" then
 		if actionType == "delete" or actionType == "yank" then
 			if numberMod < 0 then
-				if -numberMod > global.getVar("currentLine") then
-					numberMod = -(global.getVar("currentLine") - 1)
+				if -numberMod > _global.getVar("currentLine") then
+					numberMod = -(_global.getVar("currentLine") - 1)
 				end
 				move("vert", numberMod, "move", "n")
 			end
@@ -236,13 +236,13 @@ local function move(command, numberMod, actionType, otherMod)
 			cursorVerticalMove(numberMod)
 		end
 	end
-	screen.redraw()
+	_screen.redraw()
 end
 
 -- command should be a 'char' array
 --
 -- returns if the command triggered something
-function command.runViCommand(command)
+function _command.runViCommand(command)
 	-- This is so that a command is't otherMod of itself
 	local commandSub = {}
 	for i = 1, #command - 1 do
@@ -251,9 +251,9 @@ function command.runViCommand(command)
 	local otherMod, number1, number2 = parseViCommand(commandSub);
 	local numMod = number1 * number2
 
-	logger.info(" n1: " .. number1)
-	logger.info(" n2: " .. number2) -- n2 isn't used...
-	logger.info("--------" .. os.time())
+	_logger.info(" n1: " .. number1)
+	_logger.info(" n2: " .. number2) -- n2 isn't used...
+	_logger.info("--------" .. os.time())
 
 	-- set this back to false if something shouldn't trigger
 	-- but most things should trigger, thereby true by default
@@ -277,17 +277,17 @@ function command.runViCommand(command)
 	if otherMod == "z" then
 		local tLine
 		if command[#command] == "z" then
-			tLine = global.getVar("currentLine") -
-				math.floor(global.getVar("termY") / 2)
+			tLine = _global.getVar("currentLine") -
+				math.floor(_global.getVar("termY") / 2)
 		elseif command[#command] == "t" then
-			tLine = global.getVar("currentLine")
+			tLine = _global.getVar("currentLine")
 		elseif command[#command] == "b" then
-			tLine = global.getVar("currentLine") -
-				(global.getVar("termY") - 2)
+			tLine = _global.getVar("currentLine") -
+				(_global.getVar("termY") - 2)
 		end
 		if tLine ~= nil then
 			if tLine < 1 then tLine = 1 end
-			global.setVar("topLine", tLine)
+			_global.setVar("topLine", tLine)
 		end
 
 	elseif command[#command] == "f" or
@@ -303,11 +303,11 @@ function command.runViCommand(command)
 		end
 		for i = 1, numMod do
 			local startPos =
-			math.min(global.getVar("currentColumn") + 1,
-				string.len(global.getCurLine()))
-			local tempX = string.find(global.getCurLine(), keyToFind,
-				startPos) or (global.getVar("currentColumn") + tMod) -
-				global.getVar("currentColumn") -
+			math.min(_global.getVar("currentColumn") + 1,
+				string.len(_global.getCurLine()))
+			local tempX = string.find(_global.getCurLine(), keyToFind,
+				startPos) or (_global.getVar("currentColumn") + tMod) -
+				_global.getVar("currentColumn") -
 				numMod * tMod or 0
 			move("horiz", tempX, use, "n")
 		end
@@ -337,24 +337,24 @@ function command.runViCommand(command)
 	elseif command[#command] == "G" then
 		local moveDist
 		if numMod == 1 then
-			moveDist = global.getLength() - global.getVar("currentLine")
+			moveDist = _global.getLength() - _global.getVar("currentLine")
 		else
-			moveDist = numMod - global.getVar("currentLine")
+			moveDist = numMod - _global.getVar("currentLine")
 		end
 		move("vert", moveDist, use, subMod)
 
 	elseif command[#command] == "g" and
 		command[#command - 1] == "g" then
-		local moveDist = numMod - global.getVar("currentLine")
+		local moveDist = numMod - _global.getVar("currentLine")
 		move("vert", moveDist, use, subMod)
 
 
 	elseif command[#command] == "w" then
 		for i = 1, numMod do
 			local tXS =
-			string.find(global.getCurLine(), "[%s%p]", global.getVar("currentColumn"))
-				or string.len(global.getCurLine())
-			tXS = tXS - global.getVar("currentColumn") + 1
+			string.find(_global.getCurLine(), "[%s%p]", _global.getVar("currentColumn"))
+				or string.len(_global.getCurLine())
+			tXS = tXS - _global.getVar("currentColumn") + 1
 			if use == "delete" then tXS = tXS - 1 end
 			move("horiz", tXS, use, subMod)
 		end
@@ -362,26 +362,26 @@ function command.runViCommand(command)
 	elseif command[#command] == "e" then
 		for i = 1, numMod do
 			local tXS =
-			string.find(global.getCurLine(), "[%s%p]", global.getVar("currentColumn") + 2)
-				or string.len(global.getCurLine())
-			tXS = tXS - global.getVar("currentColumn") - 1
+			string.find(_global.getCurLine(), "[%s%p]", _global.getVar("currentColumn") + 2)
+				or string.len(_global.getCurLine())
+			tXS = tXS - _global.getVar("currentColumn") - 1
 			move("horiz", tXS, use, subMod)
 		end
 
 	elseif command[#command] == "b" then
 		for i = 1, numMod do
-			local tempLine = string.reverse(global.getCurLine())
+			local tempLine = string.reverse(_global.getCurLine())
 			local tXS =
-			string.find(tempLine, "[%s%p]", string.len(tempLine) - global.getVar("currentColumn") + 1)
+			string.find(tempLine, "[%s%p]", string.len(tempLine) - _global.getVar("currentColumn") + 1)
 				or string.len(tempLine) + 1
-			local moveDist = string.len(tempLine) - tXS - global.getVar("currentColumn") + 2
+			local moveDist = string.len(tempLine) - tXS - _global.getVar("currentColumn") + 2
 			-- this is used if the character directly behind the cursor is a space
 			-- Then the cursor should jump to the next (previous) word
 			if moveDist == 0 and tXS ~= string.len(tempLine) + 1 then
 				move("horiz", -1, use, "n")
-				moveDist = string.find(tempLine, "[%s%p]", string.len(tempLine) - global.getVar("currentColumn") + 2)
+				moveDist = string.find(tempLine, "[%s%p]", string.len(tempLine) - _global.getVar("currentColumn") + 2)
 					or string.len(tempLine) + 1
-				moveDist = string.len(tempLine) - moveDist - global.getVar("currentColumn") + 2
+				moveDist = string.len(tempLine) - moveDist - _global.getVar("currentColumn") + 2
 			end
 			move("horiz", moveDist, use, subMod)
 		end
@@ -389,9 +389,9 @@ function command.runViCommand(command)
 	elseif command[#command] == "W" then
 		for i = 1, numMod do
 			local tXS =
-			string.find(global.getCurLine(), "%s", global.getVar("currentColumn"))
-				or string.len(global.getCurLine())
-			tXS = tXS - global.getVar("currentColumn") + 1
+			string.find(_global.getCurLine(), "%s", _global.getVar("currentColumn"))
+				or string.len(_global.getCurLine())
+			tXS = tXS - _global.getVar("currentColumn") + 1
 			if use == "delete" then tXS = tXS - 1 end
 			move("horiz", tXS, use, subMod)
 		end
@@ -399,26 +399,26 @@ function command.runViCommand(command)
 	elseif command[#command] == "E" then
 		for i = 1, numMod do
 			local tXS =
-			string.find(global.getCurLine(), "%s", global.getVar("currentColumn") + 2)
-				or string.len(global.getCurLine())
-			tXS = tXS - global.getVar("currentColumn") - 1
+			string.find(_global.getCurLine(), "%s", _global.getVar("currentColumn") + 2)
+				or string.len(_global.getCurLine())
+			tXS = tXS - _global.getVar("currentColumn") - 1
 			move("horiz", tXS, use, subMod)
 		end
 
 	elseif command[#command] == "B" then
 		for i = 1, numMod do
-			local tempLine = string.reverse(global.getCurLine())
+			local tempLine = string.reverse(_global.getCurLine())
 			local tXS =
-			string.find(tempLine, "%s", string.len(tempLine) - global.getVar("currentColumn") + 1)
+			string.find(tempLine, "%s", string.len(tempLine) - _global.getVar("currentColumn") + 1)
 				or string.len(tempLine) + 1
-			local moveDist = string.len(tempLine) - tXS - global.getVar("currentColumn") + 2
+			local moveDist = string.len(tempLine) - tXS - _global.getVar("currentColumn") + 2
 			-- this is used if the character directly behind the cursor is a space
 			-- Then the cursor should jump to the next (previous) word
 			if moveDist == 0 and tXS ~= string.len(tempLine) + 1 then
 				move("horiz", -1, use, "n")
-				moveDist = string.find(tempLine, "%s", string.len(tempLine) - global.getVar("currentColumn") + 2)
+				moveDist = string.find(tempLine, "%s", string.len(tempLine) - _global.getVar("currentColumn") + 2)
 					or string.len(tempLine) + 1
-				moveDist = string.len(tempLine) - moveDist - global.getVar("currentColumn") + 2
+				moveDist = string.len(tempLine) - moveDist - _global.getVar("currentColumn") + 2
 			end
 			move("horiz", moveDist, use, subMod)
 		end
@@ -478,12 +478,12 @@ function command.runViCommand(command)
 			move("delEol", 1, "delEol", "noSpace")
 		end
 		command.goToEndOfLine("delete", "n")
-		vimode.insertMode("here")
+		_vimode.insertMode("here")
 
 	elseif command[#command] == "r" then
 		local ev, repl = os.pullEvent("char")
 		move("horiz", numMod - 1, "delete", subMod)
-		vimode.insertText(
+		_vimode.insertText(
 			"here",
 			string.rep(repl, numMod))
 		move("horiz", numMod - 1, "move", "n")
@@ -491,54 +491,54 @@ function command.runViCommand(command)
 
 
 	elseif command[#command] == "i" then
-		local str = vimode.insertMode("here")
+		local str = _vimode.insertMode("here")
 		for i = 2, numMod do
-			vimode.insertText("here", str)
+			_vimode.insertText("here", str)
 		end
 
 	elseif command[#command] == "I" then
 		if otherMod == "g" then
-			local str = vimode.insertMode("0")
+			local str = _vimode.insertMode("0")
 			for i = 2, numMod do
-				vimode.insertText("0", str)
+				_vimode.insertText("0", str)
 			end
 		else
-			local str = vimode.insertMode("beginning")
+			local str = _vimode.insertMode("beginning")
 			for i = 2, numMod do
-				vimode.insertText("beginning", str)
+				_vimode.insertText("beginning", str)
 			end
 		end
 
 	elseif command[#command] == "a" then
-		local str = vimode.insertMode("after")
+		local str = _vimode.insertMode("after")
 		for i = 2, numMod do
-			vimode.insertText("here", str)
+			_vimode.insertText("here", str)
 		end
 
 	elseif command[#command] == "A" then
-		local str = vimode.insertMode("end")
+		local str = _vimode.insertMode("end")
 		for i = 2, numMod do
-			vimode.insertText("end", str)
+			_vimode.insertText("end", str)
 		end
 
 	elseif command[#command] == "o" then
-		local str = vimode.insertMode("newline")
+		local str = _vimode.insertMode("newline")
 		for i = 2, numMod do
-			vimode.insertText("newline", str)
+			_vimode.insertText("newline", str)
 		end
 
 	elseif command[#command] == "O" then
-		local str = vimode.insertMode("prevline")
+		local str = _vimode.insertMode("prevline")
 		for i = 2, numMod do
-			vimode.insertText("prevline", str)
+			_vimode.insertText("prevline", str)
 		end
 
 	elseif otherMod == "Z" then
 		if command[#command] == "Z" then
-			file.write()
-			global.setVar("running", false)
+			_file.write()
+			_global.setVar("running", false)
 		elseif command[#command] == "Q" then
-			global.setVar("running", false)
+			_global.setVar("running", false)
 		end
 
 
@@ -551,7 +551,7 @@ function command.runViCommand(command)
 	end
 
 
-	screen.redraw()
+	_screen.redraw()
 	return triggered
 end
 
@@ -564,24 +564,24 @@ local function parseExCommand(text)
 	return value
 end
 
-function command.runExCommand(command)
+function _command.runExCommand(command)
 	local cmd = parseExCommand(command)
 
 	local fun = {}
 
 	function fun.q()
-		if global.getVar("hasChanged") then
-			screen.echoerr("No write since last change, ! to override")
+		if _global.getVar("hasChanged") then
+			_screen.echoerr("No write since last change, ! to override")
 		else
-			global.setVar("running", false)
+			_global.setVar("running", false)
 		end
 	end
 
 	fun["!"] = function()
-		global.setVar("running", false)
+		_global.setVar("running", false)
 	end
 	function fun.w()
-		file.write()
+		_file.write()
 	end
 
 	for i = 1, #cmd do
@@ -589,9 +589,9 @@ function command.runExCommand(command)
 		if fun[ cmd[i] ] ~= nil then
 			fun[ cmd[i] ]()
 		else
-			screen.echoerr("No such command")
+			_screen.echoerr("No such command")
 		end
 	end
 end
 
-return command
+return _command

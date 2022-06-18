@@ -22,9 +22,9 @@ Possible values:
 
 Note that the logs probably aren't readable by anyone at the moment
 ]] --
-local vimrcDefault = {}
+local _vimrcDefault = {}
 
-vimrcDefault.logLevel = "NONE"
+_vimrcDefault.logLevel = "NONE"
 
 --[[ ESCAPE BUTTON
 Possible values:
@@ -32,6 +32,6 @@ Possible values:
 	http://www.computercraft.info/wiki/Keys_(API)
 	But I would recommend against taking a key used for something else...
 ]] --
-vimrcDefault.escBtn = keys.tab
+_vimrcDefault.escBtn = keys.tab
 
-return vimrcDefault
+return _vimrcDefault

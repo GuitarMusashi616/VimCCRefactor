@@ -1,26 +1,26 @@
-global = global or require "global"
+_global = _global or require "global"
 
-local file = {}
+local _file = {}
 
-function file.write()
-	local h = fs.open(global.getVar("fileName"), "w")
-	for i = 1, global.getLength() do
+function _file.write()
+	local h = fs.open(_global.getVar("fileName"), "w")
+	for i = 1, _global.getLength() do
 		-- TODO this crashes if the file is write only
-		h.writeLine(global.getLine(i))
+		h.writeLine(_global.getLine(i))
 	end
 	h.close()
 
-	global.setVar("hasChanged", false)
+	_global.setVar("hasChanged", false)
 end
 
 --[[
 	Returns the contents of the set file in a table
 	of strings
 ]] --
-function file.read(path)
-	local h = io.open(global.getVar("fileName"), "r")
+function _file.read(path)
+	local h = io.open(_global.getVar("fileName"), "r")
 	local lines = {}
-	if fs.exists(global.getVar("fileName")) then
+	if fs.exists(_global.getVar("fileName")) then
 		local tempLine = h:read()
 
 		while tempLine ~= nil do
@@ -39,4 +39,4 @@ function file.read(path)
 	return lines
 end
 
-return file
+return _file

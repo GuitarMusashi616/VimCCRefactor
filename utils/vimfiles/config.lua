@@ -1,4 +1,4 @@
-local config = {}
+local _config = {}
 
 local defaultPath = "/utils/vimfiles/vimrcDefault"
 local userPath = "/.vimrc"
@@ -10,7 +10,7 @@ local vimrcDefault = require "vimrcDefault"
 -- end
 -- os.loadAPI(userPath)
 
-function config.get(key)
+function _config.get(key)
 	local val
 	if fs.exists("/.vimrc") then
 		-- TODO this might crash if log level is NONE
@@ -24,4 +24,4 @@ function config.get(key)
 	return val
 end
 
-return config
+return _config

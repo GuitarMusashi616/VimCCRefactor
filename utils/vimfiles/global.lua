@@ -1,6 +1,6 @@
-local global = {}
+local _global = {}
 
-global.globals = {
+_global.globals = {
 	termX = 0,
 	termY = 0,
 	hasChanged = false,
@@ -17,23 +17,23 @@ global.globals = {
 	running = true,
 }
 
-function global.getVar(key)
-	local temp = global.globals[key]
+function _global.getVar(key)
+	local temp = _global.globals[key]
 	if temp == nil then
 		error("get:no such key: " .. key)
 	end
-	return global.globals[key]
+	return _global.globals[key]
 end
 
-function global.setVar(key, value)
-	local temp = global.globals[key]
+function _global.setVar(key, value)
+	local temp = _global.globals[key]
 	if temp == nil then
 		error("set:no such key: " .. key)
 	end
 	if value == nil then
 		error("you forgot the value: " .. key)
 	end
-	global.globals[key] = value
+	_global.globals[key] = value
 end
 
 ------------------------------
@@ -41,44 +41,44 @@ end
 local lines = {}
 local length = 0
 
-function global.getLines()
+function _global.getLines()
 	return lines
 end
 
 -- screen uses the possible nil value that this may return
-function global.getLine(lineNo)
+function _global.getLine(lineNo)
 	return lines[lineNo]
 end
 
-function global.getCurLine()
-	return lines[ global.globals["currentLine"] ];
+function _global.getCurLine()
+	return lines[ _global.globals["currentLine"] ];
 end
 
-function global.setCurLine(text)
-	lines[ global.globals["currentLine"] ] = text
+function _global.setCurLine(text)
+	lines[ _global.globals["currentLine"] ] = text
 end
 
-function global.setLine(lineNo, text)
+function _global.setLine(lineNo, text)
 	lines[lineNo] = text
 end
 
-function global.setLines(inLines)
+function _global.setLines(inLines)
 	lines = inLines
 	length = #lines
 end
 
-function global.removeLine(lineNo)
+function _global.removeLine(lineNo)
 	table.remove(lines, lineNo)
 	length = length - 1
 end
 
-function global.insertLine(pos, text)
+function _global.insertLine(pos, text)
 	table.insert(lines, pos, text)
 	length = length + 1
 end
 
-function global.getLength()
+function _global.getLength()
 	return length
 end
 
-return global
+return _global

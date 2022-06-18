@@ -1,12 +1,12 @@
-global = global or require "global"
+_global = _global or require "global"
 
-local screen = {}
+local _screen = {}
 
-function screen.redraw()
+function _screen.redraw()
 	--term.clear()
 	term.setCursorPos(1, 1)
 
-	local topLine = global.getVar("topLine")
+	local topLine = _global.getVar("topLine")
 	local lineskip = 0
 
 	-- TODO maybe this should, like the real vim, have that when a line is
@@ -16,26 +16,26 @@ function screen.redraw()
 	--
 	-- This is a while loop to be able to do the check is go around
 	local i = topLine
-	while i <= topLine + global.getVar("termY") - 2 - lineskip do
+	while i <= topLine + _global.getVar("termY") - 2 - lineskip do
 		term.clearLine()
-		local tLine = global.getLine(i)
+		local tLine = _global.getLine(i)
 		if tLine ~= nil then
 			for l = 1, string.len(tLine) do
-				if i == global.getVar("currentLine") and
-					l == global.getVar("currentColumn") then
+				if i == _global.getVar("currentLine") and
+					l == _global.getVar("currentColumn") then
 					term.blit(tLine:sub(l, l), "f", "0")
 				else
 					term.write(tLine:sub(l, l))
 				end
-				if l % global.getVar("termX") == 0 then
+				if l % _global.getVar("termX") == 0 then
 					lineskip = lineskip + 1
 					io.write("\n")
 					term.clearLine()
 				end
 			end
 			-- if inputing data at the end of the line
-			if global.getVar("currentColumn") == string.len(tLine) + 1 and
-				global.getVar("currentLine") == i then
+			if _global.getVar("currentColumn") == string.len(tLine) + 1 and
+				_global.getVar("currentLine") == i then
 				term.blit(" ", "f", "0")
 			end
 		else
@@ -47,8 +47,8 @@ function screen.redraw()
 end
 
 -- for error messages shown at the bottom of the screen
-function screen.echoerr(message)
-	term.setCursorPos(1, global.getVar("termY"))
+function _screen.echoerr(message)
+	term.setCursorPos(1, _global.getVar("termY"))
 	if term.isColor() then
 		term.setBackgroundColour(colors.red)
 	end
@@ -59,20 +59,20 @@ function screen.echoerr(message)
 end
 
 -- for other messages to be shown at the bottom of the screen
-function screen.echo(message)
-	term.setCursorPos(1, global.getVar("termY"))
+function _screen.echo(message)
+	term.setCursorPos(1, _global.getVar("termY"))
 	term.write(message)
 end
 
 -- returns false if line couldn't be redrawn
-function screen.redrawLine(lineNo)
-	local topLine = global.getVar("topLine")
-	local line = global.getLine(lineNo)
+function _screen.redrawLine(lineNo)
+	local topLine = _global.getVar("topLine")
+	local line = _global.getLine(lineNo)
 
 	if lineNo < topLine then
 		return false
 	end
-	if lineNo >= topLine + global.getVar("termX") then
+	if lineNo >= topLine + _global.getVar("termX") then
 		return false
 	end
 
@@ -81,25 +81,25 @@ function screen.redrawLine(lineNo)
 	end
 end
 
-function screen.drawLine(lineNo)
-	local tLine = global.getLine(lineNo)
+function _screen.drawLine(lineNo)
+	local tLine = _global.getLine(lineNo)
 	for l = 1, string.len(tLine) do
-		if i == global.getVar("currentLine") and
-			l == global.getVar("currentColumn") then
+		if i == _global.getVar("currentLine") and
+			l == _global.getVar("currentColumn") then
 			term.blit(tLine:sub(l, l), "f", "0")
 		else
 			term.write(tLine:sub(l, l))
 		end
-		if l % global.getVar("termX") == 0 then
+		if l % _global.getVar("termX") == 0 then
 			lineskip = lineskip + 1
 			io.write("\n")
 		end
 	end
 end
 
-function screen.debug(message)
-	term.setCursorPos(global.getVar("termX") - string.len(message) + 1,
-		global.getVar("termY"))
+function _screen.debug(message)
+	term.setCursorPos(_global.getVar("termX") - string.len(message) + 1,
+		_global.getVar("termY"))
 	if message == nil then
 		term.write("nil")
 	else
@@ -108,4 +108,4 @@ function screen.debug(message)
 	os.pullEvent("key")
 end
 
-return screen
+return _screen

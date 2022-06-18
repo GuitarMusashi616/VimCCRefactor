@@ -1,19 +1,19 @@
 --/utils/vimfiles/apiloader.loadAPI( "/utils/vimfiles/" );
-global = global or require "global"
-screen = screen or require "screen"
-vimode = vimode or require "vimode"
-logger = logger or require "logger"
-file = file or require "file"
+_global = _global or require "global"
+_screen = _screen or require "screen"
+_vimode = _vimode or require "vimode"
+_logger = _logger or require "logger"
+_file = _file or require "file"
 
 -- start main
 local args = { ... }
 
 local termX, termY = term.getSize()
-global.setVar("termX", termX)
-global.setVar("termY", termY)
+_global.setVar("termX", termX)
+_global.setVar("termY", termY)
 
 
-global.setVar("hasChanged", false)
+_global.setVar("hasChanged", false)
 
 -- TODO check if file is read only
 if #args < 1 then
@@ -25,33 +25,33 @@ if fs.exists(sPath) and fs.isDir(sPath) then
 	print("Cannot edit a directory.")
 	return
 end
-global.setVar("fileName", sPath)
+_global.setVar("fileName", sPath)
 
 
 
 -- what absolute line are selected
-global.setVar("currentLine", 1)
-global.setVar("currentColumn", 1)
-global.setVar("topLine", 1)
+_global.setVar("currentLine", 1)
+_global.setVar("currentColumn", 1)
+_global.setVar("topLine", 1)
 
 
-local lines = file.read(global.getVar("fileName"))
-global.setLines(lines)
+local lines = _file.read(_global.getVar("fileName"))
+_global.setLines(lines)
 
 
 
-screen.redraw()
+_screen.redraw()
 
 
 
 if not fs.isDir("/.vimlog") then
 	fs.makeDir("/.vimlog")
 end
-logger.init("/.vimlog/vimlog-" .. os.day() .. "-" .. os.time(), config.get("logLevel"))
-logger.info("log file created")
+_logger.init("/.vimlog/vimlog-" .. os.day() .. "-" .. os.time(), _config.get("logLevel"))
+_logger.info("log file created")
 
 
-vimode.normalMode()
+_vimode.normalMode()
 
 term.setCursorPos(1, 1)
 term.clear()
