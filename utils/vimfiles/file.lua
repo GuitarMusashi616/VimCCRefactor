@@ -1,4 +1,4 @@
-local global = require "global"
+global = global or require "global"
 
 local file = {}
 

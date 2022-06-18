@@ -1,8 +1,8 @@
-local global = require "global"
-local vimode = require "vimode"
-local logger = require "logger"
-local screen = require "screen"
-local file = require "file"
+global = global or require "global"
+vimode = vimode or require "vimode"
+logger = logger or require "logger"
+screen = screen or require "screen"
+file = file or require "file"
 
 local command = {}
 

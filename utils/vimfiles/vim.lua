@@ -1,9 +1,9 @@
 --/utils/vimfiles/apiloader.loadAPI( "/utils/vimfiles/" );
-local global = require "global"
-local screen = require "screen"
-local vimode = require "vimode"
-local logger = require "logger"
-local file = require "file"
+global = global or require "global"
+screen = screen or require "screen"
+vimode = vimode or require "vimode"
+logger = logger or require "logger"
+file = file or require "file"
 
 -- start main
 local args = { ... }

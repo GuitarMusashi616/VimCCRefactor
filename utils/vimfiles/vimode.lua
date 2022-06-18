@@ -1,7 +1,7 @@
-local global = require "global"
-local screen = require "screen"
-local command = require "command"
-local config = require "config"
+global = global or require "global"
+screen = screen or require "screen"
+command = command or require "command"
+config = config or require "config"
 
 local vimode = {}
 
